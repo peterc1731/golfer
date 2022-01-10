@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useRecoilValue} from 'recoil';
 import Button from '../components/Button';
 import ButtonContainer from '../components/ButtonContainer';
@@ -9,6 +9,7 @@ import Spacer from '../components/Spacer';
 import Winner from '../components/Winner';
 import {currentGameState} from '../state/game';
 import {Navigation} from '../state/navigation';
+import Haptic from 'react-native-haptic-feedback';
 
 interface Props {
   navigation: Navigation;
@@ -23,6 +24,20 @@ function SummaryScreen({navigation}: Props) {
       emoji: p.emoji,
     }))
     .sort((a, b) => a.score - b.score)[0];
+  useEffect(() => {
+    setTimeout(() => {
+      Haptic.trigger('impactLight');
+      setTimeout(() => {
+        Haptic.trigger('impactLight');
+        setTimeout(() => {
+          Haptic.trigger('impactMedium');
+          setTimeout(() => {
+            Haptic.trigger('impactHeavy');
+          }, 300);
+        }, 100);
+      }, 300);
+    }, 1000);
+  }, []);
   return (
     <ScreenContainer>
       <FlexContainer scroll>

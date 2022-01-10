@@ -1,4 +1,5 @@
 import React, {Suspense, useState} from 'react';
+import {Keyboard} from 'react-native';
 import {useSetRecoilState} from 'recoil';
 import Button from '../components/Button';
 import ButtonContainer from '../components/ButtonContainer';
@@ -50,6 +51,7 @@ function GameScreen({navigation}: Props) {
         <Suspense fallback={<Loader />}>
           <NewGame
             onNext={() => {
+              Keyboard.dismiss();
               setOverlayOpen(false);
               navigation.navigate('Hole');
             }}

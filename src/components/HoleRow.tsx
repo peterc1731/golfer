@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import Haptic from 'react-native-haptic-feedback';
 
 interface Props {
   value: number | undefined;
@@ -11,7 +12,11 @@ function HoleRow({value, onChange, emoji}: Props) {
   return (
     <View style={styles.wrapper}>
       <View style={styles.buttons}>
-        <TouchableOpacity onPress={() => onChange(value ? value - 1 : 0)}>
+        <TouchableOpacity
+          onPress={() => {
+            Haptic.trigger('impactMedium');
+            onChange(value ? value - 1 : 0);
+          }}>
           <Text style={styles.text}>–</Text>
         </TouchableOpacity>
         <View style={styles.circle}>
@@ -22,7 +27,10 @@ function HoleRow({value, onChange, emoji}: Props) {
           )}
         </View>
         <TouchableOpacity
-          onPress={() => onChange(value ? (value < 9 ? value + 1 : value) : 1)}>
+          onPress={() => {
+            Haptic.trigger('impactMedium');
+            onChange(value ? (value < 9 ? value + 1 : value) : 1);
+          }}>
           <Text style={styles.text}>+</Text>
         </TouchableOpacity>
       </View>

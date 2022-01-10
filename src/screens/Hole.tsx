@@ -49,7 +49,7 @@ function HoleScreen({navigation}: Props) {
           text="End Game"
           type="destructive"
           onPress={() => {
-            setGameList(gl => [...gl, {...game, complete: true}]);
+            setGameList(gl => [{...game, complete: true}, ...gl]);
             setGame(g => ({...g, complete: true}));
             navigation.replace('Summary');
           }}

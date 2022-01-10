@@ -5,6 +5,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import Haptic from 'react-native-haptic-feedback';
 import {brandGreen, brandYellow, destructive} from '../style/colors';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(
@@ -27,9 +28,11 @@ function Button({text, type, onPress, disabled = false}: Props) {
     <AnimatedTouchable
       onPressIn={() => {
         scale.value = 0.95;
+        Haptic.trigger('impactLight');
       }}
       onPressOut={() => {
         scale.value = 1;
+        Haptic.trigger('impactLight');
       }}
       onPress={onPress}
       disabled={disabled}
