@@ -58,3 +58,9 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+# ios builds
+/ios/fastlane/builds/
+
+# app store connect api key
+/ios/fastlane/api_key.json
