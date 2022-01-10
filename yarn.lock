@@ -817,6 +817,11 @@
   resolved "https://registry.yarnpkg.com/@bugsnag/plugin-react-native-unhandled-rejection/-/plugin-react-native-unhandled-rejection-7.14.0.tgz#4d048ed1207a27eac73dae0e4cd3308029ed0116"
   integrity sha512-b+Zt8wR8Vox0flyL5RpzvhTU4ZM+JVGjzAz11zRq6DJ52vRLJFvGZv/EMO6944PFG+pqVgJGNzhU4v0McVhWgA==
 
+"@bugsnag/plugin-react-navigation@^7.14.1":
+  version "7.14.1"
+  resolved "https://registry.yarnpkg.com/@bugsnag/plugin-react-navigation/-/plugin-react-navigation-7.14.1.tgz#4516d4d6b263fb168aedc3200f9bd4f3945a9271"
+  integrity sha512-hifGg2TEQico3QF7WhN6w+TqZBnslhq7dEmNTWogVCPWrKmazOZqA4w/JcRI9Mc67mHpBXA0lh0dRFMuwKQwCQ==
+
 "@bugsnag/plugin-react@^7.14.0":
   version "7.14.0"
   resolved "https://registry.yarnpkg.com/@bugsnag/plugin-react/-/plugin-react-7.14.0.tgz#066e9e28b18db3141daff34e14da81b5f36ef901"
