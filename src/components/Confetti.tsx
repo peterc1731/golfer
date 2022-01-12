@@ -55,7 +55,7 @@ function ConfettiItem({
       -1,
     );
     x.value = withRepeat(
-      withTiming(x.value - 50 + Math.round(Math.random() * 100), {
+      withTiming(x.value - 100 + Math.round(Math.random() * 200), {
         duration: 1000 + Math.round(Math.random() * 2000),
       }),
       -1,
