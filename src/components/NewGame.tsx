@@ -1,11 +1,11 @@
-import React, {createRef, useEffect, useRef} from 'react';
+import React, {createRef, useEffect, useRef, useState} from 'react';
 import {Keyboard, View} from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
 import {useRecoilState, useSetRecoilState} from 'recoil';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import {randomEmoji} from '../lib/emoji';
-import {currentGameState} from '../state/game';
+import {currentGameState, Game} from '../state/game';
 import {overlayHeightState} from '../state/overlay';
 import Center from './Center';
 import DashedLine from './DashedLine';
@@ -19,19 +19,20 @@ interface Props {
 
 function NewGame({onNext, shown}: Props) {
   const [game, setGame] = useRecoilState(currentGameState);
+  const [title, setTitle] = useState(game.title);
+  const [location, setLocation] = useState(game.location);
+  const [players, setPlayers] = useState<Game['players']>(game.players);
   const setOverlayHeight = useSetRecoilState(overlayHeightState);
   const titleRef = useRef<TextInput>(null);
   const locationRef = useRef<TextInput>(null);
   const playerRefs = useRef(game.players.map(() => createRef<TextInput>()));
   const isValid =
-    game.title &&
-    game.location &&
-    (game.players.length > 1
-      ? game.players.every((p, i, a) =>
-          i === a.length - 1 ? !p.name : p.name,
-        ) ||
-        (game.players.length === 4 && game.players.every(p => p.name))
-      : game.players[0]);
+    title &&
+    location &&
+    (players.length > 1
+      ? players.every((p, i, a) => (i === a.length - 1 ? !p.name : p.name)) ||
+        (players.length === 4 && players.every(p => p.name))
+      : players[0]);
   useEffect(() => {
     if (shown) {
       titleRef.current?.focus();
@@ -41,13 +42,13 @@ function NewGame({onNext, shown}: Props) {
     }
   }, [shown]);
   useEffect(() => {
-    setOverlayHeight(55 * game.players.length - 1);
-  }, [game.players, setOverlayHeight]);
+    setOverlayHeight(55 * players.length - 1);
+  }, [players, setOverlayHeight]);
   return (
     <View>
       <Input
-        value={game.title}
-        onChange={t => setGame(g => ({...g, title: t}))}
+        value={title}
+        onChange={t => setTitle(t)}
         placeholder="TITLE"
         ref={titleRef}
         returnKeyType="next"
@@ -55,8 +56,8 @@ function NewGame({onNext, shown}: Props) {
       />
       <Spacer height={25} />
       <Input
-        value={game.location}
-        onChange={t => setGame(g => ({...g, location: t}))}
+        value={location}
+        onChange={t => setLocation(t)}
         placeholder="LOCATION"
         ref={locationRef}
         returnKeyType="next"
@@ -64,39 +65,39 @@ function NewGame({onNext, shown}: Props) {
       />
       <Spacer height={25} />
       <DashedLine />
-      {game.players.map((p, i) => (
+      {players.map((p, i) => (
         <React.Fragment key={`player-${i}`}>
           <Spacer height={25} />
           <EmojiWrapper
             onPress={() =>
-              setGame(g => {
-                const players = [...g.players];
-                players[i] = {
-                  ...players[i],
-                  emoji: randomEmoji(players.map(x => x.emoji)),
+              setPlayers(x => {
+                const ps = [...x];
+                ps[i] = {
+                  ...ps[i],
+                  emoji: randomEmoji(players.map(y => y.emoji)),
                 };
-                return {...g, players};
+                return ps;
               })
             }
             emoji={p.emoji}>
             <Input
               value={p.name}
               onChange={t =>
-                setGame(g => {
-                  const players = [...g.players];
-                  players[i] = {...players[i], name: t};
-                  if (i + 1 === players.length && t && players.length < 4) {
-                    players.push({
+                setPlayers(x => {
+                  const ps = [...x];
+                  ps[i] = {...ps[i], name: t};
+                  if (i + 1 === ps.length && t && ps.length < 4) {
+                    ps.push({
                       name: '',
-                      emoji: randomEmoji(players.map(x => x.emoji)),
+                      emoji: randomEmoji(ps.map(y => y.emoji)),
                     });
                     playerRefs.current.push(createRef<TextInput>());
                   }
-                  if (i + 2 === players.length && !t) {
-                    players.pop();
+                  if (i + 2 === ps.length && !t) {
+                    ps.pop();
                     playerRefs.current.pop();
                   }
-                  return {...g, players};
+                  return ps;
                 })
               }
               placeholder={`PLAYER ${i + 1}`}
@@ -113,14 +114,13 @@ function NewGame({onNext, shown}: Props) {
           text="Start Game"
           type="secondary"
           onPress={() => {
-            setGame(g => {
-              const players = [...g.players];
-              return {
-                ...g,
-                players: players.filter(p => p.name),
-                started: true,
-              };
-            });
+            setGame(g => ({
+              ...g,
+              title,
+              location,
+              players: players.filter(p => p.name),
+              started: true,
+            }));
             onNext();
           }}
           disabled={!isValid}
