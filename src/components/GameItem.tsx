@@ -119,7 +119,10 @@ function GameItem({item, onPress, onDelete}: Props) {
         containerStyle={[styles.delete, styles.stickLeft]}>
         <Text style={styles.title}>DELETE</Text>
       </TouchableWithoutFeedback>
-      <PanGestureHandler onGestureEvent={eventHandler}>
+      <PanGestureHandler
+        onGestureEvent={eventHandler}
+        failOffsetY={[-5, 5]}
+        activeOffsetX={[-5, 5]}>
         <Animated.View style={[animatedStyles, styles.onTop]}>
           <TouchableWithoutFeedback onPress={onPress}>
             <View style={[styles.wrapper, item.complete && styles.complete]}>
