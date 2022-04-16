@@ -104,6 +104,7 @@ function NewGame({onNext, shown}: Props) {
               returnKeyType="next"
               ref={playerRefs.current[i]}
               onSubmit={() => playerRefs.current[i + 1].current?.focus()}
+              maxLength={5}
             />
           </EmojiWrapper>
         </React.Fragment>

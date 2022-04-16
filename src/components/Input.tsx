@@ -7,10 +7,11 @@ interface Props {
   placeholder: string;
   returnKeyType: ReturnKeyTypeOptions;
   onSubmit: () => void;
+  maxLength?: number;
 }
 
 const Input = React.forwardRef<TextInput, Props>(
-  ({value, onChange, placeholder, returnKeyType, onSubmit}, ref) => {
+  ({value, onChange, placeholder, returnKeyType, onSubmit, maxLength}, ref) => {
     return (
       <TextInput
         ref={ref}
@@ -23,6 +24,7 @@ const Input = React.forwardRef<TextInput, Props>(
         returnKeyType={returnKeyType}
         blurOnSubmit={false}
         onSubmitEditing={onSubmit}
+        maxLength={maxLength}
       />
     );
   },

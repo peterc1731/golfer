@@ -1,7 +1,12 @@
 import React from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {useRecoilValue} from 'recoil';
-import {currentGameState, Game, gameListState} from '../state/game';
+import {useRecoilState} from 'recoil';
+import {
+  currentGameState,
+  defaultGame,
+  Game,
+  gameListState,
+} from '../state/game';
 import GameItem from './GameItem';
 import Spacer from './Spacer';
 import SubtitleText from './SubtitleText';
@@ -11,15 +16,20 @@ interface Props {
 }
 
 function GameList({onSelect}: Props) {
-  const gameList = useRecoilValue(gameListState);
-  const currentGame = useRecoilValue(currentGameState);
+  const [gameList, setGameList] = useRecoilState(gameListState);
+  const [currentGame, setCurrentGame] = useRecoilState(currentGameState);
   const hasPrev = !!gameList.length;
   const hasCurrent = !currentGame.complete && !!currentGame.title;
+
   return (
     <>
       {hasCurrent && (
         <>
-          <GameItem item={currentGame} onPress={() => onSelect(currentGame)} />
+          <GameItem
+            item={currentGame}
+            onPress={() => onSelect(currentGame)}
+            onDelete={() => setCurrentGame(defaultGame())}
+          />
           <Spacer height={40} />
         </>
       )}
@@ -31,8 +41,19 @@ function GameList({onSelect}: Props) {
           <FlatList
             style={styles.list}
             data={gameList}
-            renderItem={({item}) => (
-              <GameItem item={item} onPress={() => onSelect(item)} />
+            keyExtractor={({id}) => id}
+            renderItem={({item, index}) => (
+              <GameItem
+                item={item}
+                onPress={() => onSelect(item)}
+                onDelete={() =>
+                  setGameList(prev => {
+                    const updated = [...prev];
+                    updated.splice(index, 1);
+                    return updated;
+                  })
+                }
+              />
             )}
           />
         </>

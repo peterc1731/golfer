@@ -1,6 +1,8 @@
 ## Feature
 
-- delete games
+- delete games ✅
+- warn when starting a new game if another is already in progress
+- add best score to card ✅
 
 ## Bug
 
