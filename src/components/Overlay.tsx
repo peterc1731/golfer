@@ -1,7 +1,7 @@
-import {useKeyboard} from '@react-native-community/hooks';
 import React, {useEffect} from 'react';
 import {
   Dimensions,
+  InputAccessoryView,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -12,15 +12,14 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
+  FadeIn,
+  FadeOut,
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
-  withDelay,
   withTiming,
 } from 'react-native-reanimated';
-import {useRecoilValue} from 'recoil';
-import {overlayHeightState} from '../state/overlay';
 import {backgroundColor} from '../style/colors';
 
 interface Props {
@@ -28,40 +27,18 @@ interface Props {
   open: boolean;
 }
 
-const OVERLAY_DISPLACEMENT = 250;
+const OVERLAY_DISPLACEMENT = 400;
 
 const Overlay: React.FC<Props> = ({children, onClose, open}) => {
-  const opacity = useSharedValue(0);
-  const zIndex = useSharedValue(-1);
-  const extraHeight = useRecoilValue(overlayHeightState);
-  const yPos = useSharedValue(OVERLAY_DISPLACEMENT);
-  const {keyboardHeight} = useKeyboard();
-  useEffect(() => {
-    if (open) {
-      opacity.value = withTiming(0.27, {duration: 200});
-      if (keyboardHeight > 0) {
-        yPos.value = withTiming(-keyboardHeight - extraHeight, {
-          duration: 400,
-          easing: Easing.inOut(Easing.ease),
-        });
-      }
-      zIndex.value = 2;
-    } else {
-      opacity.value = withTiming(0, {duration: 200});
-      yPos.value = withTiming(OVERLAY_DISPLACEMENT, {
-        duration: 350,
-        easing: Easing.inOut(Easing.ease),
-      });
-      zIndex.value = withDelay(350, withTiming(-1, {duration: 0}));
-    }
-  }, [open, opacity, yPos, zIndex, keyboardHeight, extraHeight]);
+  const yPos = useSharedValue(0);
   const animatedContainerStyles = useAnimatedStyle(() => ({
     transform: [{translateY: yPos.value}],
   }));
-  const animatedWrapperStyles = useAnimatedStyle(() => ({
-    backgroundColor: `rgba(0,0,0,${opacity.value})`,
-    zIndex: zIndex.value,
-  }));
+  useEffect(() => {
+    if (open) {
+      yPos.value = 0;
+    }
+  }, [yPos, open]);
   const eventHandler = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,
     {start: number}
@@ -70,7 +47,9 @@ const Overlay: React.FC<Props> = ({children, onClose, open}) => {
       ctx.start = yPos.value;
     },
     onActive: (event, ctx) => {
-      yPos.value = ctx.start + event.translationY;
+      if (event.translationY > 0) {
+        yPos.value = ctx.start + event.translationY;
+      }
     },
     onEnd: (event, ctx) => {
       if (event.translationY > OVERLAY_DISPLACEMENT / 2) {
@@ -91,18 +70,20 @@ const Overlay: React.FC<Props> = ({children, onClose, open}) => {
       }
     },
   });
-  return (
-    <Animated.View style={[styles.wrapper, animatedWrapperStyles]}>
+  return open ? (
+    <Animated.View style={styles.wrapper} entering={FadeIn} exiting={FadeOut}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.fill} />
       </TouchableWithoutFeedback>
-      <PanGestureHandler onGestureEvent={eventHandler}>
-        <Animated.View style={[styles.container, animatedContainerStyles]}>
-          {children}
-        </Animated.View>
-      </PanGestureHandler>
+      <InputAccessoryView>
+        <PanGestureHandler onGestureEvent={eventHandler}>
+          <Animated.View style={[styles.container, animatedContainerStyles]}>
+            {children}
+          </Animated.View>
+        </PanGestureHandler>
+      </InputAccessoryView>
     </Animated.View>
-  );
+  ) : null;
 };
 
 const styles = StyleSheet.create({
@@ -112,10 +93,11 @@ const styles = StyleSheet.create({
     height: Dimensions.get('screen').height * 2,
     bottom: -Dimensions.get('screen').height,
     left: 0,
+    zIndex: 2,
+    backgroundColor: 'rgba(0,0,0,0.27)',
   },
   container: {
     position: 'relative',
-    height: Dimensions.get('screen').height + OVERLAY_DISPLACEMENT,
     shadowOffset: {width: 0, height: -4},
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -123,7 +105,7 @@ const styles = StyleSheet.create({
     backgroundColor,
     borderTopRightRadius: 40,
     borderTopLeftRadius: 40,
-    paddingTop: 30,
+    paddingVertical: 30,
     paddingHorizontal: 20,
   },
   fill: {flex: 1},

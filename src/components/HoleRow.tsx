@@ -69,9 +69,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   emoji: {
-    fontFamily: 'SFProRounded-Heavy',
     fontSize: 39,
-    color: '#DABA4C',
     marginBottom: 1,
   },
   par: {

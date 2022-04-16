@@ -6,8 +6,8 @@
 
 ## Bug
 
-- last emoji in score screen sometimes doesn't display
-- new game input responsiveness
+- last emoji in score screen sometimes doesn't display ✅
+- new game input responsiveness ✅
 
 ## Refactor
 
